@@ -4,6 +4,7 @@ psycopg2
 Flask-SQLAlchemy
 Flask-Migrate
 Flask-Script
+Flask-Caching
 
 pandas
 SQLAlchemy
