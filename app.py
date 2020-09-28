@@ -15,7 +15,7 @@ cache = Cache(app)
 
 from models import *
 
-@app.route('/api/v1/<prod_id>')
+@app.route('/api/v1/<prod_id>', methods=['GET'])
 @cache.cached(timeout=200)
 def get_product(prod_id):
 	product = Products.query.get(int(prod_id))
