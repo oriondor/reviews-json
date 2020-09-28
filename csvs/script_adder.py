@@ -2,8 +2,11 @@ import csv
 import psycopg2
 import os
 
+host = os.environ['host']
+dbname = os.environ['dbname']
+user = os.environ['user']
 password = os.environ['password']
-conn = psycopg2.connect(f"host=ec2-52-213-173-172.eu-west-1.compute.amazonaws.com dbname=d4piu8k00a3slu user=ijppypsnabbvel password={password}")
+conn = psycopg2.connect(f"host={host} dbname={dbname} user={user} password={password}")
 cur = conn.cursor()
 with open('Products.csv', 'r') as f:
     reader = csv.reader(f)
