@@ -1,6 +1,6 @@
 import os
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, request
+from flask import Flask, request,make_response
 from flask import jsonify
 from flask_caching import Cache
 
@@ -16,7 +16,7 @@ cache = Cache(app)
 from models import *
 
 @app.route('/api/v1/<prod_id>', methods=['GET'])
-@cache.cached(timeout=200)
+@cache.cached(timeout=10,query_string=True)
 def get_product(prod_id):
 	product = Products.query.get(int(prod_id))
 	if not product:
@@ -24,14 +24,17 @@ def get_product(prod_id):
 			'error':'Product not found',
 			'code':404
 			}), 404
-	reviews = Reviews.query.filter_by(asin=product.asin)
 	page = int(request.args.get('page',1))
 	limit_reviews = 10
-	return jsonify({
+	fr,to = (page-1)*limit_reviews,page*limit_reviews
+	reviews = Reviews.query.filter_by(asin=product.asin).offset(fr).limit(to)
+	r = make_response(jsonify({
 	'product':{'asin':product.asin,'title':product.title},
 	'pages': math.ceil(reviews.count()/limit_reviews),
-	'reviews':[{'asin':review.asin,'title':review.title,'review':review.review} for review in reviews[(page-1)*limit_reviews:page*limit_reviews]]
-	}), 200
+	'reviews':[{'id':review.review_id,'asin':review.asin,'title':review.title,'review':review.review} for review in reviews]
+	}))
+	r.headers.set('Access-Control-Allow-Origin','*')
+	return r
 
 
 # curl -i -H "Content-Type: application/x-www-form-urlencoded" -X PUT -d 'title=Example title&review=Example review' http://localhost:5000/api/v1/create_review/3

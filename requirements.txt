@@ -5,6 +5,4 @@ Flask-SQLAlchemy
 Flask-Migrate
 Flask-Script
 Flask-Caching
-
-pandas
 SQLAlchemy
